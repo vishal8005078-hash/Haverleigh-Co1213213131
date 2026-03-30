@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Haverleigh & Co — Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f6f5f2;--white:#fff;--black:#0d0d0c;--border:#e3e1db;
+  --mid:#9b9890;--dark:#3a3835;--sans:'Jost',system-ui,sans-serif;
+  --green:#16a34a;--green-bg:#dcfce7;--red:#dc2626;--red-bg:#fee2e2;
+  --amber:#b45309;--amber-bg:#fef3c7;--r:9px;
+}
+html{font-size:15px}
+body{font-family:var(--sans);background:var(--bg);color:var(--dark);min-height:100vh}
+.app{display:grid;grid-template-columns:230px 1fr;min-height:100vh}
+@media(max-width:780px){.app{grid-template-columns:1fr}}
+.side{background:var(--black);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto}
+@media(max-width:780px){.side{display:none}}
+.sl{padding:26px 22px 18px;border-bottom:1px solid rgba(255,255,255,.08)}
+.sl-name{font-size:.7rem;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:#fff}
+.sl-sub{font-size:.54rem;letter-spacing:.15em;color:rgba(255,255,255,.3);margin-top:3px}
+.snav{padding:10px 0;flex:1}
+.slabel{padding:10px 22px 4px;font-size:.52rem;font-weight:600;letter-spacing:.25em;text-transform:uppercase;color:rgba(255,255,255,.2)}
+.sitem{display:flex;align-items:center;gap:9px;padding:10px 22px;font-size:.73rem;color:rgba(255,255,255,.42);cursor:pointer;border-left:2px solid transparent;transition:.15s;user-select:none}
+.sitem:hover{color:rgba(255,255,255,.78);background:rgba(255,255,255,.04)}
+.sitem.on{color:#fff;border-left-color:#fff;background:rgba(255,255,255,.07)}
+.sitem svg{width:14px;height:14px;flex-shrink:0;opacity:.6}
+.sitem.on svg{opacity:1}
+.sfoot{padding:14px;border-top:1px solid rgba(255,255,255,.08)}
+.pub-btn{width:100%;padding:11px;background:#fff;color:#000;border:none;border-radius:6px;font-family:var(--sans);font-size:.68rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;transition:.15s}
+.pub-btn:hover{opacity:.85}
+.pub-btn:disabled{opacity:.35;cursor:not-allowed}
+.udot{width:7px;height:7px;border-radius:50%;background:#f97316;display:none;flex-shrink:0}
+.mob-top{display:none;background:var(--black);padding:14px 18px;align-items:center;justify-content:space-between;gap:12px}
+@media(max-width:780px){.mob-top{display:flex}}
+.mob-logo{font-size:.68rem;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:#fff;white-space:nowrap}
+.mob-pub{padding:9px 15px;background:#fff;color:#000;border:none;border-radius:6px;font-family:var(--sans);font-size:.65rem;font-weight:600;cursor:pointer;white-space:nowrap}
+.mob-tabs{display:none;overflow-x:auto;background:#111;scrollbar-width:none}
+.mob-tabs::-webkit-scrollbar{display:none}
+@media(max-width:780px){.mob-tabs{display:flex}}
+.mtab{padding:11px 16px;font-size:.67rem;font-weight:500;color:rgba(255,255,255,.38);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:.15s}
+.mtab.on{color:#fff;border-bottom-color:#fff}
+.main{padding:28px 36px;max-width:820px}
+@media(max-width:780px){.main{padding:16px 15px}}
+.sbar{position:sticky;top:0;z-index:50;background:rgba(246,245,242,.96);backdrop-filter:blur(6px);border-bottom:1px solid var(--border);margin:-28px -36px 24px;padding:11px 36px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+@media(max-width:780px){.sbar{margin:-16px -15px 18px;padding:10px 15px}}
+.sbar-info{font-size:.67rem;color:var(--mid)}
+.sbar-info strong{color:var(--dark);font-weight:500}
+.sbar-btns{display:flex;gap:8px;flex-shrink:0}
+.pg-title{font-size:1.18rem;font-weight:400;color:var(--black);margin-bottom:3px}
+.pg-sub{font-size:.72rem;color:var(--mid);margin-bottom:22px}
+.tab{display:none}.tab.on{display:block}
+.card{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:20px 22px;margin-bottom:16px}
+.card-head{font-size:.6rem;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--mid);margin-bottom:14px;display:flex;justify-content:space-between;align-items:center}
+.r2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:520px){.r2{grid-template-columns:1fr}}
+.f{margin-bottom:12px}
+.f label{display:block;font-size:.69rem;font-weight:500;color:var(--dark);margin-bottom:5px}
+.f input,.f textarea,.f select{width:100%;padding:8px 11px;border:1px solid var(--border);border-radius:6px;font-family:var(--sans);font-size:.82rem;color:var(--black);background:#fff;outline:none;transition:border-color .15s}
+.f input:focus,.f textarea:focus,.f select:focus{border-color:#888}
+.f textarea{resize:vertical;min-height:66px;line-height:1.5}
+.hint{font-size:.62rem;color:var(--mid);margin-top:4px;line-height:1.5}
+.hint a{color:var(--black);font-weight:500}
+.tog-wrap{display:flex;align-items:center;gap:9px;cursor:pointer;user-select:none;width:fit-content}
+.tog{width:36px;height:20px;background:#d5d3ce;border-radius:99px;position:relative;transition:background .2s;flex-shrink:0}
+.tog.on{background:var(--black)}
+.tog::after{content:'';position:absolute;top:3px;left:3px;width:14px;height:14px;border-radius:50%;background:#fff;transition:transform .2s}
+.tog.on::after{transform:translateX(16px)}
+.tog-lbl{font-size:.78rem}
+.chips{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:10px;min-height:8px}
+.chip{display:flex;align-items:center;gap:5px;background:var(--bg);border:1px solid var(--border);border-radius:99px;padding:4px 10px;font-size:.73rem}
+.chip-x{background:none;border:none;cursor:pointer;color:var(--mid);font-size:1rem;line-height:1;padding:0 1px}
+.chip-x:hover{color:var(--red)}
+.adrow{display:flex;gap:8px}
+.adrow input{flex:1;padding:8px 11px;border:1px solid var(--border);border-radius:6px;font-family:var(--sans);font-size:.8rem;outline:none}
+.adrow input:focus{border-color:#888}
+.adrow button{padding:8px 14px;background:var(--black);color:#fff;border:none;border-radius:6px;font-family:var(--sans);font-size:.7rem;font-weight:500;cursor:pointer}
+.adrow button:hover{opacity:.8}
+.cat-list{display:flex;flex-direction:column;gap:7px;margin-bottom:10px}
+.cat-row{display:grid;grid-template-columns:130px 1fr 36px;gap:8px;align-items:center;padding:8px 11px;background:var(--bg);border:1px solid var(--border);border-radius:6px}
+.cat-row input{padding:6px 9px;border:1px solid var(--border);border-radius:5px;font-family:var(--sans);font-size:.79rem;background:#fff;outline:none;width:100%}
+.cat-row input:focus{border-color:#888}
+.icon-x{background:none;border:1px solid var(--border);border-radius:5px;padding:5px 7px;cursor:pointer;color:var(--mid);transition:.15s;display:flex;align-items:center}
+.icon-x:hover{color:var(--red);border-color:var(--red)}
+.ghost{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:9px;border:1.5px dashed var(--border);background:none;border-radius:6px;font-family:var(--sans);font-size:.72rem;color:var(--mid);cursor:pointer;transition:.15s}
+.ghost:hover{color:var(--dark);border-color:#bbb}
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(175px,1fr));gap:10px;margin-bottom:12px}
+.pcard{background:var(--bg);border:1px solid var(--border);border-radius:7px;overflow:hidden;display:flex;flex-direction:column}
+.pcard-img{height:88px;object-fit:cover;width:100%}
+.pcard-noimg{height:88px;background:#edebe6;display:flex;align-items:center;justify-content:center;color:#ccc}
+.pcard-body{padding:9px 10px;flex:1;display:flex;flex-direction:column;gap:2px}
+.pcard-name{font-size:.78rem;font-weight:500;color:var(--black);line-height:1.3}
+.pcard-meta{font-size:.67rem;color:var(--mid)}
+.ptag{display:inline-block;font-size:.57rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;padding:2px 7px;border-radius:99px;margin-top:3px}
+.ptag.New{background:var(--green-bg);color:#166534}
+.ptag.Bestseller{background:var(--amber-bg);color:#92400e}
+.ptag.Limited{background:var(--red-bg);color:#991b1b}
+.pcard-acts{display:flex;gap:5px;padding:0 10px 9px}
+.pcard-acts button{flex:1;padding:5px;border:1px solid var(--border);background:#fff;border-radius:4px;font-family:var(--sans);font-size:.65rem;cursor:pointer;transition:.15s}
+.pcard-acts .pedit:hover{background:var(--black);color:#fff;border-color:var(--black)}
+.pcard-acts .pdel:hover{background:var(--red);color:#fff;border-color:var(--red)}
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;z-index:999;padding:16px;backdrop-filter:blur(4px)}
+.ov.on{display:flex}
+.modal{background:#fff;border-radius:12px;padding:24px;width:100%;max-width:500px;max-height:92vh;overflow-y:auto;position:relative}
+.modal-title{font-size:.95rem;font-weight:500;color:var(--black);margin-bottom:18px}
+.modal-x{position:absolute;top:16px;right:16px;background:none;border:none;cursor:pointer;color:var(--mid);font-size:1.2rem;line-height:1}
+.modal-x:hover{color:var(--dark)}
+.modal-foot{display:flex;gap:8px;justify-content:flex-end;margin-top:16px}
+.btn{padding:8px 16px;border-radius:6px;font-family:var(--sans);font-size:.73rem;font-weight:500;cursor:pointer;border:none;transition:.15s}
+.btn-p{background:var(--black);color:#fff}.btn-p:hover{opacity:.82}
+.btn-g{background:none;border:1px solid var(--border);color:var(--dark)}.btn-g:hover{background:var(--bg)}
+.btn-sm{padding:7px 13px;font-size:.68rem}
+.gh-step{display:flex;align-items:flex-start;gap:10px;margin-bottom:14px}
+.gh-num{width:22px;height:22px;border-radius:50%;background:var(--black);color:#fff;font-size:.65rem;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.gh-text{font-size:.76rem;color:var(--dark);line-height:1.6}
+.log{background:#0d0d0c;color:#4ade80;border-radius:7px;padding:12px 14px;font-size:.69rem;font-family:'Courier New',monospace;line-height:1.75;min-height:56px;max-height:200px;overflow-y:auto;margin-top:12px;white-space:pre-wrap;display:none}
+.log.on{display:block}
+.pill{display:inline-flex;align-items:center;gap:5px;padding:4px 9px;border-radius:99px;font-size:.63rem;font-weight:600}
+.pill.ok{background:var(--green-bg);color:var(--green)}
+.pill.fail{background:var(--red-bg);color:var(--red)}
+.pill-dot{width:6px;height:6px;border-radius:50%;background:currentColor}
+.toast{position:fixed;bottom:22px;right:22px;padding:10px 16px;border-radius:7px;font-size:.73rem;font-weight:500;opacity:0;transform:translateY(8px);transition:.25s;pointer-events:none;z-index:9999;max-width:280px;line-height:1.4}
+.toast.show{opacity:1;transform:none}
+.toast.n{background:var(--black);color:#fff}
+.toast.ok{background:#15803d;color:#fff}
+.toast.err{background:var(--red);color:#fff}
+.spin{display:inline-block;width:11px;height:11px;border:2px solid rgba(255,255,255,.25);border-top-color:#fff;border-radius:50%;animation:sp .6s linear infinite;vertical-align:middle}
+@keyframes sp{to{transform:rotate(360deg)}}
+.thumb{width:60px;height:60px;object-fit:cover;border-radius:5px;border:1px solid var(--border)}
+.thumb-ph{width:60px;height:60px;background:var(--bg);border:1px dashed var(--border);border-radius:5px;display:flex;align-items:center;justify-content:center}
+</style>
+</head>
+<body>
+
+<div class="mob-top">
+  <div class="mob-logo">Haverleigh Admin</div>
+  <button class="mob-pub" onclick="publish()">Publish ↑</button>
+</div>
+<div class="mob-tabs">
+  <div class="mtab on" data-tab="identity" onclick="tab('identity')">Store</div>
+  <div class="mtab" data-tab="hero" onclick="tab('hero')">Hero</div>
+  <div class="mtab" data-tab="categories" onclick="tab('categories')">Categories</div>
+  <div class="mtab" data-tab="products" onclick="tab('products')">Products</div>
+  <div class="mtab" data-tab="github" onclick="tab('github')">GitHub</div>
+</div>
+
+<div class="app">
+<aside class="side">
+  <div class="sl">
+    <div class="sl-name">Haverleigh &amp; Co</div>
+    <div class="sl-sub">Admin Panel</div>
+  </div>
+  <nav class="snav">
+    <div class="slabel">Content</div>
+    <div class="sitem on" data-tab="identity" onclick="tab('identity')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>Store Identity
+    </div>
+    <div class="sitem" data-tab="hero" onclick="tab('hero')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>Hero &amp; Banner
+    </div>
+    <div class="sitem" data-tab="categories" onclick="tab('categories')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Categories
+    </div>
+    <div class="sitem" data-tab="products" onclick="tab('products')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>Products
+    </div>
+    <div class="slabel" style="margin-top:8px">Deploy</div>
+    <div class="sitem" data-tab="github" onclick="tab('github')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>GitHub &amp; Publish
+    </div>
+  </nav>
+  <div class="sfoot">
+    <button class="pub-btn" id="pub-btn" onclick="publish()">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+      Publish to GitHub
+      <span class="udot" id="udot"></span>
+    </button>
+  </div>
+</aside>
+
+<main class="main">
+  <div class="sbar">
+    <div class="sbar-info" id="sbar-info">Not connected to GitHub</div>
+    <div class="sbar-btns">
+      <button class="btn btn-g btn-sm" onclick="loadFromGH()">↓ Load from GitHub</button>
+      <button class="btn btn-p btn-sm" onclick="publish()">↑ Publish</button>
+    </div>
+  </div>
+
+  <!-- IDENTITY -->
+  <div class="tab on" id="tab-identity">
+    <div class="pg-title">Store Identity</div>
+    <div class="pg-sub">Business details, logo, and WhatsApp number</div>
+    <div class="card">
+      <div class="card-head">Business Info</div>
+      <div class="r2">
+        <div class="f"><label>Store Name</label><input id="i-name" oninput="dirty()"></div>
+        <div class="f"><label>Owner Name</label><input id="i-owner" oninput="dirty()"></div>
+      </div>
+      <div class="r2">
+        <div class="f"><label>Store Instagram <span style="font-weight:300;color:var(--mid)">(no @)</span></label><input id="i-igs" oninput="dirty()" placeholder="haverleighoffical"></div>
+        <div class="f"><label>Owner Instagram <span style="font-weight:300;color:var(--mid)">(no @)</span></label><input id="i-igo" oninput="dirty()" placeholder="bharathhsoorya"></div>
+      </div>
+      <div class="f">
+        <label>WhatsApp Number <span style="font-weight:300;color:var(--mid)">(international, no + or spaces)</span></label>
+        <input id="i-wa" oninput="dirty()" placeholder="918590620093" style="max-width:280px">
+        <div class="hint">India: 91 + 10-digit number → <strong>919876543210</strong></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-head">Logo</div>
+      <div style="display:flex;gap:14px;align-items:flex-start">
+        <div id="prev-logo"><div class="thumb-ph"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div></div>
+        <div style="flex:1">
+          <div class="f"><label>Logo URL or filename</label><input id="i-logo" oninput="dirty();px('i-logo','prev-logo',60)" placeholder="logo.png or https://..."></div>
+          <div class="f"><label>Logo Height (px)</label><input id="i-logoh" type="number" style="max-width:90px" oninput="dirty()" placeholder="36"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HERO -->
+  <div class="tab" id="tab-hero">
+    <div class="pg-title">Hero &amp; Banner</div>
+    <div class="pg-sub">The first section customers see on the homepage</div>
+    <div class="card">
+      <div class="card-head">Banner Image <span style="font-size:.65rem;font-weight:400;text-transform:none;letter-spacing:0;color:var(--mid)">shown above the title</span></div>
+      <div style="display:flex;gap:14px;align-items:flex-start">
+        <div id="prev-banner"><div class="thumb-ph" style="width:80px;height:80px"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div></div>
+        <div style="flex:1">
+          <div class="f"><label>Banner URL or filename</label><input id="h-banner" oninput="dirty();px('h-banner','prev-banner',80)" placeholder="banner.png or https://..."></div>
+          <div class="r2">
+            <div class="f"><label>Max Height (px)</label><input id="h-bannerh" type="number" oninput="dirty()" placeholder="280"></div>
+            <div class="f" style="display:flex;align-items:flex-end;padding-bottom:2px">
+              <div class="tog-wrap" onclick="togBool('h-showbanner')">
+                <div class="tog" id="tog-h-showbanner"></div>
+                <span class="tog-lbl" id="lbl-h-showbanner">Visible</span>
+              </div>
+              <input type="hidden" id="h-showbanner" value="true">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-head">Hero Text</div>
+      <div class="f"><label>Main Title</label><input id="h-title" oninput="dirty()" placeholder="Adorned with Intention"></div>
+      <div class="f"><label>Subtitle</label><input id="h-sub" oninput="dirty()" placeholder="Curated fancy jewellery for the modern woman"></div>
+      <div class="r2">
+        <div class="f"><label>Button 1 Label</label><input id="h-cta1" oninput="dirty()" placeholder="Shop Now"></div>
+        <div class="f"><label>Button 2 Label</label><input id="h-cta2" oninput="dirty()" placeholder="What's New"></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-head">Marquee Ticker <span style="font-size:.65rem;font-weight:400;text-transform:none;letter-spacing:0;color:var(--mid)">the scrolling black bar</span></div>
+      <div class="chips" id="marquee-chips"></div>
+      <div class="adrow">
+        <input id="mq-in" placeholder="Add ticker text…" onkeydown="if(event.key==='Enter')addChip()">
+        <button onclick="addChip()">+ Add</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CATEGORIES -->
+  <div class="tab" id="tab-categories">
+    <div class="pg-title">Categories</div>
+    <div class="pg-sub">ID must be lowercase with no spaces. It links to products — don't change an ID after adding products to it.</div>
+    <div class="card">
+      <div class="card-head">
+        <span>Category List</span>
+        <span style="font-size:.65rem;font-weight:400;text-transform:none;letter-spacing:0;color:var(--mid)">ID · Display Name</span>
+      </div>
+      <div class="cat-list" id="cat-list"></div>
+      <button class="ghost" onclick="addCat()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Add Category
+      </button>
+    </div>
+  </div>
+
+  <!-- PRODUCTS -->
+  <div class="tab" id="tab-products">
+    <div class="pg-title">Products</div>
+    <div class="pg-sub">Click Edit to change a product. All changes go live when you Publish.</div>
+    <div class="card">
+      <div class="card-head">All Products <span id="prod-count" style="font-size:.68rem;font-weight:400;text-transform:none;letter-spacing:0;color:var(--mid)"></span></div>
+      <div class="pgrid" id="pgrid"></div>
+      <button class="ghost" onclick="openAddProd()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Add New Product
+      </button>
+    </div>
+  </div>
+
+  <!-- GITHUB -->
+  <div class="tab" id="tab-github">
+    <div class="pg-title">GitHub &amp; Publish</div>
+    <div class="pg-sub">Connect your GitHub repo. Publish writes directly to your live site.</div>
+    <div class="card">
+      <div class="card-head">How it works</div>
+      <div class="gh-step"><div class="gh-num">1</div><div class="gh-text">Go to <a href="https://github.com/settings/tokens/new" target="_blank" style="color:var(--black);font-weight:500">github.com/settings/tokens</a> → Classic token → tick <code style="background:#f0eeea;padding:1px 5px;border-radius:3px">repo</code> → Generate → copy the token.</div></div>
+      <div class="gh-step"><div class="gh-num">2</div><div class="gh-text">Paste it below with your repo details. Click <strong>Test Connection</strong> to verify.</div></div>
+      <div class="gh-step"><div class="gh-num">3</div><div class="gh-text">Click <strong>Load from GitHub</strong> to pull your current live store data into all tabs.</div></div>
+      <div class="gh-step"><div class="gh-num">4</div><div class="gh-text">Edit anything in the other tabs.</div></div>
+      <div class="gh-step" style="margin-bottom:0"><div class="gh-num">5</div><div class="gh-text">Click <strong>Publish to GitHub</strong>. Your live site updates in ~30 seconds via GitHub Pages.</div></div>
+    </div>
+    <div class="card">
+      <div class="card-head">Repository Connection</div>
+      <div class="f">
+        <label>Personal Access Token <span style="font-weight:300;color:var(--mid)">(stored only in your browser, never sent anywhere else)</span></label>
+        <input id="g-tok" type="password" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" oninput="saveGH()">
+      </div>
+      <div class="r2">
+        <div class="f"><label>GitHub Username</label><input id="g-user" oninput="saveGH()" placeholder="yourname"></div>
+        <div class="f"><label>Repository Name</label><input id="g-repo" oninput="saveGH()" placeholder="haverleigh-website"></div>
+      </div>
+      <div class="r2">
+        <div class="f"><label>File Path <span style="font-weight:300;color:var(--mid)">(usually index.html)</span></label><input id="g-file" oninput="saveGH()" placeholder="index.html"></div>
+        <div class="f"><label>Branch</label><input id="g-branch" oninput="saveGH()" placeholder="main"></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:6px">
+        <button class="btn btn-p btn-sm" id="test-btn" onclick="testGH()">Test Connection</button>
+        <button class="btn btn-g btn-sm" id="load-btn" onclick="loadFromGH()">↓ Load from GitHub</button>
+        <span id="gh-status"></span>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-head">Publish</div>
+      <p style="font-size:.75rem;color:var(--mid);line-height:1.65;margin-bottom:14px">Reads your live <code style="background:#f0eeea;padding:1px 5px;border-radius:3px">index.html</code> from GitHub, replaces <em>only</em> the STORE data block with your edits, and commits it back. Everything else in the file is untouched.</p>
+      <button class="pub-btn" style="max-width:220px;padding:11px 18px" onclick="publish()">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+        Publish to GitHub
+      </button>
+      <div class="log" id="pub-log"></div>
+    </div>
+  </div>
+</main>
+</div>
+
+<!-- PRODUCT MODAL -->
+<div class="ov" id="prod-modal">
+  <div class="modal">
+    <div class="modal-title" id="pm-title">Add Product</div>
+    <button class="modal-x" onclick="closeMod('prod-modal')">&#x2715;</button>
+    <div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:14px">
+      <div id="pm-prev"><div class="thumb-ph"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div></div>
+      <div style="flex:1"><div class="f"><label>Image URL</label><input id="pm-img" placeholder="https://... or filename.jpg" oninput="px('pm-img','pm-prev',60)"></div></div>
+    </div>
+    <div class="r2">
+      <div class="f"><label>Name *</label><input id="pm-name" placeholder="Aria Drop Earrings"></div>
+      <div class="f"><label>Price</label><input id="pm-price" placeholder="₹549"></div>
+    </div>
+    <div class="r2">
+      <div class="f"><label>Category</label><select id="pm-cat"></select></div>
+      <div class="f"><label>Tag</label>
+        <select id="pm-tag">
+          <option value="">None</option>
+          <option value="New">New</option>
+          <option value="Bestseller">Bestseller</option>
+          <option value="Limited">Limited</option>
+        </select>
+      </div>
+    </div>
+    <div class="f"><label>Description</label><textarea id="pm-desc" placeholder="Short product description…"></textarea></div>
+    <div class="f">
+      <div class="tog-wrap" onclick="togBool('pm-isnew')">
+        <div class="tog" id="tog-pm-isnew"></div>
+        <span class="tog-lbl" id="lbl-pm-isnew">Show in What's New: No</span>
+      </div>
+      <input type="hidden" id="pm-isnew" value="false">
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-g" onclick="closeMod('prod-modal')">Cancel</button>
+      <button class="btn btn-p" onclick="saveProd()">Save Product</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+'use strict';
+/* ── STATE ── */
+var S={
+  name:'Haverleigh & Co',owner:'Bharath Soorya',
+  instagramStore:'haverleighoffical',instagramOwner:'bharathhsoorya',
+  logoPath:'',logoHeight:36,
+  showBanner:true,bannerPath:'',bannerMaxHeight:280,
+  whatsappNumber:'918590620093',
+  nav:["Home","What's New","All Jewellery","Categories"],
+  hero:{title:'Adorned with Intention',subtitle:'Curated fancy jewellery for the modern woman',
+    cta1:{label:'Shop Now',page:'all'},cta2:{label:"What's New",page:'new'}},
+  marqueeItems:['Handpicked Pieces','Minimal by Design',"Women's Studio",'Fancy Jewellery','Made to be Worn','Haverleigh & Co'],
+  categories:[
+    {id:'bangle',name:'Bangles',icon:'bangle'},{id:'earring',name:'Earrings',icon:'earring'},
+    {id:'necklace',name:'Necklaces',icon:'necklace'},{id:'ring',name:'Rings',icon:'ring'},
+    {id:'bracelet',name:'Bracelets',icon:'bracelet'},{id:'anklet',name:'Anklets',icon:'anklet'},
+    {id:'pendant',name:'Pendants',icon:'pendant'},{id:'set',name:'Sets',icon:'set'}
+  ],
+  products:[
+    {id:'p001',name:'Aria Drop Earrings',price:'₹549',category:'earring',tag:'Bestseller',isNew:true,image:'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=600&q=80',description:'Graceful teardrop silhouette with a brushed matte finish.'},
+    {id:'p002',name:'Celeste Hoop Set',price:'₹449',category:'earring',tag:'New',isNew:true,image:'https://images.unsplash.com/photo-1611591437281-460bfbe1220a?w=600&q=80',description:'Three mismatched hoops in varying sizes.'},
+    {id:'p003',name:'Lumière Bangle',price:'₹699',category:'bangle',tag:'New',isNew:true,image:'https://images.unsplash.com/photo-1573408301185-9519f94815b1?w=600&q=80',description:'Slim hammered bangle. Stackable design.'},
+    {id:'p004',name:'Solène Chain Necklace',price:'₹799',category:'necklace',tag:'Bestseller',isNew:true,image:'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=600&q=80',description:'Delicate flat link chain with an adjustable clasp.'},
+    {id:'p005',name:'Dew Ring',price:'₹349',category:'ring',tag:'New',isNew:true,image:'https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=600&q=80',description:'Tiny bead cluster set on a thin band.'},
+    {id:'p006',name:'Reverie Pendant',price:'₹649',category:'pendant',tag:'Limited',isNew:false,image:'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=600&q=80',description:'Crescent moon pendant on a fine box chain.'},
+    {id:'p007',name:'Mira Anklet',price:'₹299',category:'anklet',tag:'',isNew:false,image:'https://images.unsplash.com/photo-1506630448388-4e683c67ddb0?w=600&q=80',description:'Dainty beaded anklet with a secure lobster clasp.'},
+    {id:'p008',name:'Bloom Bracelet',price:'₹499',category:'bracelet',tag:'Bestseller',isNew:false,image:'https://images.unsplash.com/photo-1590548784585-643d2b9f2925?w=600&q=80',description:'Woven thread bracelet with a gold-tone floral charm.'},
+    {id:'p009',name:'Éclat Stud Set',price:'₹399',category:'earring',tag:'',isNew:false,image:'https://images.unsplash.com/photo-1692534177696-f0e18ce9c6b8?w=600&q=80',description:'Set of three minimalist studs.'},
+    {id:'p010',name:'Cascade Necklace',price:'₹899',category:'necklace',tag:'Limited',isNew:false,image:'https://images.unsplash.com/photo-1618160702438-9b02ab6515c9?w=600&q=80',description:'Layered satellite chain necklace.'},
+    {id:'p011',name:'Lune Bangle Set',price:'₹849',category:'set',tag:'New',isNew:false,image:'https://images.unsplash.com/photo-1568944729609-07e9dc54e00f?w=600&q=80',description:'Set of three slim bangles.'},
+    {id:'p012',name:'Zara Stack Ring',price:'₹449',category:'ring',tag:'Bestseller',isNew:false,image:'https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=600&q=80',description:'Set of four ultra-thin stacking rings.'}
+  ]
+};
+var GH={token:'',user:'',repo:'',file:'index.html',branch:'main'};
+var editIdx=-1;
+var isDirty=false;
+
+/* ── UTILS ── */
+var $=function(id){return document.getElementById(id);};
+function gv(id){var e=$(id);return e?e.value:'';}
+function sv(id,v){var e=$(id);if(e)e.value=(v==null)?'':v;}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function setBool(id,val){
+  var h=$(id);if(h)h.value=val?'true':'false';
+  var t=$('tog-'+id);if(t)t.classList.toggle('on',!!val);
+  var l=$('lbl-'+id);
+  if(l)l.textContent=(id.indexOf('isnew')!==-1)?("Show in What's New: "+(val?'Yes':'No')):(val?'Visible':'Hidden');
+}
+function togBool(id){setBool(id,gv(id)!=='true');dirty();}
+function px(iid,wid,sz){
+  var url=gv(iid);var w=$(wid);if(!w)return;
+  if(!url){w.innerHTML='<div class="thumb-ph" style="width:'+sz+'px;height:'+sz+'px"></div>';return;}
+  w.innerHTML='<img src="'+esc(url)+'" class="thumb" style="width:'+sz+'px;height:'+sz+'px" onerror="this.parentNode.innerHTML=\'\';">';
+}
+function openMod(id){$(id).classList.add('on');}
+function closeMod(id){$(id).classList.remove('on');}
+function dirty(){isDirty=true;$('udot').style.display='inline-block';updateSbar();}
+function toast(msg,type){
+  var t=$('toast');t.textContent=msg;
+  t.className='toast show '+(type||'n');
+  clearTimeout(t._t);t._t=setTimeout(function(){t.classList.remove('show');},3500);
+}
+function addLog(m){
+  var log=$('pub-log');log.classList.add('on');
+  log.textContent+=m+'\n';log.scrollTop=log.scrollHeight;
+}
+
+/* ── TABS ── */
+function tab(name){
+  document.querySelectorAll('.tab').forEach(function(e){e.classList.remove('on');});
+  $('tab-'+name).classList.add('on');
+  document.querySelectorAll('.sitem,.mtab').forEach(function(e){
+    e.classList.toggle('on',e.dataset.tab===name);
+  });
+}
+
+/* ── GITHUB PERSISTENCE ── */
+function loadGH(){
+  try{var s=localStorage.getItem('hav_gh3');if(s){var p=JSON.parse(s);Object.keys(p).forEach(function(k){GH[k]=p[k];});}}catch(e){}
+  sv('g-tok',GH.token);sv('g-user',GH.user);sv('g-repo',GH.repo);
+  sv('g-file',GH.file||'index.html');sv('g-branch',GH.branch||'main');
+  updateSbar();
+}
+function saveGH(){
+  GH.token=gv('g-tok').trim();GH.user=gv('g-user').trim();GH.repo=gv('g-repo').trim();
+  GH.file=gv('g-file').trim()||'index.html';GH.branch=gv('g-branch').trim()||'main';
+  localStorage.setItem('hav_gh3',JSON.stringify(GH));updateSbar();
+}
+function ghReady(){return !!(GH.token&&GH.user&&GH.repo&&GH.file&&GH.branch);}
+function updateSbar(){
+  var el=$('sbar-info');if(!el)return;
+  if(!ghReady()){
+    el.innerHTML='<span style="color:#d97706">⚠ GitHub not configured — go to GitHub & Publish tab</span>';
+  } else {
+    el.innerHTML='<strong>'+esc(GH.user)+'/'+esc(GH.repo)+'</strong> · '+esc(GH.file)+' ('+esc(GH.branch)+')'+(isDirty?' · <span style="color:#f97316">unsaved changes</span>':'');
+  }
+}
+
+/* ── FILL FORM ← STATE ── */
+function fillForm(){
+  sv('i-name',S.name);sv('i-owner',S.owner);
+  sv('i-igs',S.instagramStore);sv('i-igo',S.instagramOwner);
+  sv('i-wa',S.whatsappNumber);sv('i-logo',S.logoPath);sv('i-logoh',S.logoHeight);
+  sv('h-banner',S.bannerPath);sv('h-bannerh',S.bannerMaxHeight);
+  sv('h-title',S.hero&&S.hero.title);sv('h-sub',S.hero&&S.hero.subtitle);
+  sv('h-cta1',S.hero&&S.hero.cta1&&S.hero.cta1.label);
+  sv('h-cta2',S.hero&&S.hero.cta2&&S.hero.cta2.label);
+  setBool('h-showbanner',S.showBanner!==false);
+  px('i-logo','prev-logo',60);px('h-banner','prev-banner',80);
+  renderChips();renderCats();renderProds();rebuildCatSel();
+}
+
+/* ── COLLECT FORM → STATE ── */
+function collectForm(){
+  S.name=gv('i-name');S.owner=gv('i-owner');
+  S.instagramStore=gv('i-igs');S.instagramOwner=gv('i-igo');
+  S.whatsappNumber=gv('i-wa');S.logoPath=gv('i-logo');
+  S.logoHeight=parseInt(gv('i-logoh'))||36;
+  S.bannerPath=gv('h-banner');S.bannerMaxHeight=parseInt(gv('h-bannerh'))||280;
+  S.showBanner=gv('h-showbanner')==='true';
+  if(!S.hero){S.hero={title:'',subtitle:'',cta1:{label:'Shop Now',page:'all'},cta2:{label:"What's New",page:'new'}};}
+  if(!S.hero.cta1)S.hero.cta1={label:'Shop Now',page:'all'};
+  if(!S.hero.cta2)S.hero.cta2={label:"What's New",page:'new'};
+  S.hero.title=gv('h-title');S.hero.subtitle=gv('h-sub');
+  S.hero.cta1.label=gv('h-cta1');S.hero.cta2.label=gv('h-cta2');
+}
+
+/* ── MARQUEE ── */
+function renderChips(){
+  var w=$('marquee-chips');w.innerHTML='';
+  S.marqueeItems.forEach(function(v,i){
+    var d=document.createElement('div');d.className='chip';
+    d.appendChild(document.createTextNode(v));
+    var x=document.createElement('button');x.className='chip-x';x.textContent='×';
+    (function(idx){x.onclick=function(){S.marqueeItems.splice(idx,1);renderChips();dirty();};})(i);
+    d.appendChild(x);w.appendChild(d);
+  });
+}
+function addChip(){
+  var inp=$('mq-in');var v=inp.value.trim();if(!v)return;
+  S.marqueeItems.push(v);inp.value='';renderChips();dirty();
+}
+
+/* ── CATEGORIES ── */
+function renderCats(){
+  var list=$('cat-list');list.innerHTML='';
+  S.categories.forEach(function(c,i){
+    var row=document.createElement('div');row.className='cat-row';
+    var idIn=document.createElement('input');idIn.value=c.id;idIn.placeholder='id';
+    (function(idx){idIn.oninput=function(){S.categories[idx].id=this.value.toLowerCase().replace(/\s+/g,'');rebuildCatSel();dirty();};})(i);
+    var nmIn=document.createElement('input');nmIn.value=c.name;nmIn.placeholder='Display Name';
+    (function(idx){nmIn.oninput=function(){S.categories[idx].name=this.value;rebuildCatSel();dirty();};})(i);
+    var del=document.createElement('button');del.className='icon-x';del.title='Delete';
+    del.innerHTML='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/></svg>';
+    (function(idx){del.onclick=function(){
+      if(!confirm('Delete "'+S.categories[idx].name+'"?'))return;
+      S.categories.splice(idx,1);renderCats();rebuildCatSel();dirty();
+    };})(i);
+    row.appendChild(idIn);row.appendChild(nmIn);row.appendChild(del);list.appendChild(row);
+  });
+}
+function addCat(){
+  S.categories.push({id:'newcat',name:'New Category',icon:'ring'});
+  renderCats();rebuildCatSel();dirty();
+}
+function rebuildCatSel(){
+  var sel=$('pm-cat');if(!sel)return;
+  var cur=sel.value;sel.innerHTML='';
+  S.categories.forEach(function(c){
+    var o=document.createElement('option');o.value=c.id;o.textContent=c.name;sel.appendChild(o);
+  });
+  sel.value=cur;
+}
+
+/* ── PRODUCTS ── */
+function renderProds(){
+  var g=$('pgrid');var cnt=$('prod-count');
+  cnt.textContent=S.products.length+' products';g.innerHTML='';
+  S.products.forEach(function(p,i){
+    var card=document.createElement('div');card.className='pcard';
+    if(p.image){
+      var img=document.createElement('img');img.className='pcard-img';img.src=p.image;img.alt=p.name;
+      img.onerror=function(){this.style.display='none';};card.appendChild(img);
+    } else {
+      var ph=document.createElement('div');ph.className='pcard-noimg';
+      ph.innerHTML='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>';
+      card.appendChild(ph);
+    }
+    var body=document.createElement('div');body.className='pcard-body';
+    var nm=document.createElement('div');nm.className='pcard-name';nm.textContent=p.name;body.appendChild(nm);
+    var cat=S.categories.find(function(c){return c.id===p.category;})||{};
+    var mt=document.createElement('div');mt.className='pcard-meta';
+    mt.textContent=(p.price||'')+(cat.name?' · '+cat.name:'');body.appendChild(mt);
+    if(p.tag){var tg=document.createElement('span');tg.className='ptag '+p.tag;tg.textContent=p.tag;body.appendChild(tg);}
+    card.appendChild(body);
+    var acts=document.createElement('div');acts.className='pcard-acts';
+    var eb=document.createElement('button');eb.className='pedit';eb.textContent='Edit';
+    (function(idx){eb.onclick=function(){openEditProd(idx);};})(i);
+    var db=document.createElement('button');db.className='pdel';db.textContent='Delete';
+    (function(idx){db.onclick=function(){
+      if(!confirm('Delete "'+S.products[idx].name+'"?'))return;
+      S.products.splice(idx,1);renderProds();dirty();toast('Deleted');
+    };})(i);
+    acts.appendChild(eb);acts.appendChild(db);card.appendChild(acts);
+    g.appendChild(card);
+  });
+}
+function openAddProd(){
+  editIdx=-1;$('pm-title').textContent='Add Product';
+  sv('pm-name','');sv('pm-price','');sv('pm-img','');sv('pm-desc','');sv('pm-tag','');
+  setBool('pm-isnew',false);
+  $('pm-prev').innerHTML='<div class="thumb-ph"></div>';
+  rebuildCatSel();openMod('prod-modal');
+}
+function openEditProd(i){
+  editIdx=i;var p=S.products[i];
+  $('pm-title').textContent='Edit — '+p.name;
+  sv('pm-name',p.name);sv('pm-price',p.price);sv('pm-img',p.image||'');
+  sv('pm-desc',p.description||'');sv('pm-tag',p.tag||'');
+  setBool('pm-isnew',!!p.isNew);
+  rebuildCatSel();sv('pm-cat',p.category);
+  px('pm-img','pm-prev',60);openMod('prod-modal');
+}
+function saveProd(){
+  var name=gv('pm-name').trim();if(!name){toast('Enter a product name','err');return;}
+  var prod={
+    id:editIdx===-1?'p'+Date.now():S.products[editIdx].id,
+    name:name,price:gv('pm-price'),category:gv('pm-cat'),
+    tag:gv('pm-tag'),isNew:gv('pm-isnew')==='true',
+    image:gv('pm-img'),description:gv('pm-desc')
+  };
+  if(editIdx===-1)S.products.push(prod);else S.products[editIdx]=prod;
+  closeMod('prod-modal');renderProds();dirty();toast('Product saved ✓','ok');
+}
+
+/* ── BUILD STORE BLOCK ── */
+function buildStoreBlock(){
+  var q=function(v){return JSON.stringify(String(v===null||v===undefined?'':v));};
+  var qn=function(v){return isNaN(Number(v))?0:Number(v);};
+  var qb=function(v){return v?'true':'false';};
+  var cats=S.categories.map(function(c){
+    return '    { id: '+q(c.id)+', name: '+q(c.name)+', icon: '+q(c.icon||c.id)+' }';
+  }).join(',\n');
+  var prods=S.products.map(function(p){
+    return '    {\n'+
+      '      id: '+q(p.id)+',\n'+
+      '      name: '+q(p.name)+',\n'+
+      '      price: '+q(p.price)+',\n'+
+      '      category: '+q(p.category)+',\n'+
+      '      tag: '+q(p.tag)+',\n'+
+      '      isNew: '+qb(p.isNew)+',\n'+
+      '      image: '+q(p.image||'')+',\n'+
+      '      description: '+q(p.description||'')+'\n'+
+      '    }';
+  }).join(',\n');
+  var marq=S.marqueeItems.map(function(m){return '    '+q(m);}).join(',\n');
+  return 'const STORE = {\n\n'+
+    '  name:           '+q(S.name)+',\n'+
+    '  owner:          '+q(S.owner)+',\n'+
+    '  instagramStore: '+q(S.instagramStore)+',\n'+
+    '  instagramOwner: '+q(S.instagramOwner)+',\n\n'+
+    '  logoPath:   '+q(S.logoPath)+',\n'+
+    '  logoHeight: '+qn(S.logoHeight)+',\n\n'+
+    '  showBanner:      '+qb(S.showBanner)+',\n'+
+    '  bannerPath:      '+q(S.bannerPath)+',\n'+
+    '  bannerMaxHeight: '+qn(S.bannerMaxHeight)+',\n\n'+
+    '  whatsappNumber: '+q(S.whatsappNumber)+',\n\n'+
+    '  nav: ["Home", "What\'s New", "All Jewellery", "Categories"],\n\n'+
+    '  hero: {\n'+
+    '    title:    '+q(S.hero.title)+',\n'+
+    '    subtitle: '+q(S.hero.subtitle)+',\n'+
+    '    cta1: { label: '+q(S.hero.cta1.label)+', page: "all" },\n'+
+    '    cta2: { label: '+q(S.hero.cta2.label)+', page: "new" }\n'+
+    '  },\n\n'+
+    '  marqueeItems: [\n'+marq+'\n  ],\n\n'+
+    '  categories: [\n'+cats+'\n  ],\n\n'+
+    '  products: [\n'+prods+'\n  ]\n\n'+
+    '};';
+}
+
+/* ── INJECT STORE INTO HTML  ← THE FIXED CORE ──
+   Uses the exact script tag as a unique marker.
+   Finds the FIRST closing tag AFTER the open tag.
+   Safety-checks that the block actually shrank/grew sensibly.
+   Never touches anything outside the owner-data script block.
+*/
+var OPEN_TAG='<script id="owner-data">';
+var CLOSE_TAG='<'+'\/script>';// split to avoid self-match
+
+function injectStore(html,newBlock){
+  var si=html.indexOf(OPEN_TAG);
+  if(si===-1)return{ok:false,error:'Cannot find <script id="owner-data"> — is this the right file?'};
+  var bodyStart=si+OPEN_TAG.length;
+  var ci=html.indexOf(CLOSE_TAG,bodyStart);
+  if(ci===-1)return{ok:false,error:'Cannot find closing tag after owner-data block.'};
+  var existing=html.slice(bodyStart,ci);
+  if(existing.indexOf('STORE')===-1)return{ok:false,error:'owner-data block has no STORE object — wrong file?'};
+  var newInner='\n/*\n\u2554'+'\u2550'.repeat(78)+'\u2557\n'+
+    '\u2551  HAVERLEIGH & CO \u2014 OWNER EDIT ZONE'+' '.repeat(42)+'\u2551\n'+
+    '\u255a'+'\u2550'.repeat(78)+'\u255d\n*/\n\n'+
+    newBlock+
+    '\n/*\n\u255a'+'\u2550'.repeat(78)+'\u255d\n   END OWNER EDIT ZONE\n'+
+    '\u255a'+'\u2550'.repeat(78)+'\u255d\n*/\n';
+  return{ok:true,html:html.slice(0,bodyStart)+newInner+html.slice(ci)};
+}
+
+/* ── PARSE STORE FROM HTML ── */
+function parseStoreFromHTML(html){
+  var si=html.indexOf(OPEN_TAG);if(si===-1)return null;
+  var start=si+OPEN_TAG.length;
+  var ci=html.indexOf(CLOSE_TAG,start);if(ci===-1)return null;
+  var block=html.slice(start,ci)
+    .replace(/\/\*[\s\S]*?\*\//g,'')
+    .replace(/\/\/.*/g,'')
+    .trim();
+  if(!block)return null;
+  try{
+    var fn=new Function(block+'; return (typeof STORE!=="undefined")?STORE:null;');
+    var st=fn();
+    return(st&&typeof st==='object')?st:null;
+  }catch(err){console.error('parseStoreFromHTML:',err);return null;}
+}
+
+/* ── BASE64 ── */
+function decodeB64(b64){
+  var c=b64.replace(/\s/g,'');
+  try{return decodeURIComponent(escape(atob(c)));}catch(e){return atob(c);}
+}
+function encodeB64(str){
+  try{return btoa(unescape(encodeURIComponent(str)));}catch(e){return btoa(str);}
+}
+
+/* ── GITHUB API ── */
+async function testGH(){
+  saveGH();
+  var btn=$('test-btn');var st=$('gh-status');
+  if(!ghReady()){st.innerHTML='<span class="pill fail"><span class="pill-dot"></span>Fill all fields first</span>';return;}
+  btn.disabled=true;btn.innerHTML='<span class="spin"></span> Testing…';st.innerHTML='';
+  try{
+    var r=await fetch('https://api.github.com/repos/'+GH.user+'/'+GH.repo+'/contents/'+GH.file+'?ref='+GH.branch,
+      {headers:{Authorization:'token '+GH.token,Accept:'application/vnd.github.v3+json'}});
+    if(r.ok){
+      st.innerHTML='<span class="pill ok"><span class="pill-dot"></span>Connected ✓</span>';
+      toast('GitHub connected!','ok');updateSbar();
+    }else{
+      var e=await r.json();
+      st.innerHTML='<span class="pill fail"><span class="pill-dot"></span>'+r.status+': '+esc(e.message)+'</span>';
+      toast('Failed: '+(e.message||r.status),'err');
+    }
+  }catch(e){
+    st.innerHTML='<span class="pill fail"><span class="pill-dot"></span>Network error</span>';
+    toast('Network error — check your token','err');
+  }
+  btn.disabled=false;btn.textContent='Test Connection';
+}
+
+async function loadFromGH(){
+  saveGH();
+  if(!ghReady()){toast('Go to GitHub & Publish tab and fill in your details','err');tab('github');return;}
+  var btn=$('load-btn');
+  btn.disabled=true;btn.innerHTML='<span class="spin" style="border-top-color:#333"></span> Loading…';
+  try{
+    var r=await fetch('https://api.github.com/repos/'+GH.user+'/'+GH.repo+'/contents/'+GH.file+'?ref='+GH.branch,
+      {headers:{Authorization:'token '+GH.token,Accept:'application/vnd.github.v3+json'}});
+    if(!r.ok){var e=await r.json();toast('Load failed: '+(e.message||r.status),'err');btn.disabled=false;btn.textContent='↓ Load from GitHub';return;}
+    var data=await r.json();
+    var html=decodeB64(data.content);
+    var parsed=parseStoreFromHTML(html);
+    if(parsed){
+      S=parsed;
+      if(!S.hero)S.hero={title:'',subtitle:'',cta1:{label:'Shop Now',page:'all'},cta2:{label:"What's New",page:'new'}};
+      if(!S.hero.cta1)S.hero.cta1={label:'Shop Now',page:'all'};
+      if(!S.hero.cta2)S.hero.cta2={label:"What's New",page:'new'};
+      if(!S.categories)S.categories=[];
+      if(!S.products)S.products=[];
+      if(!S.marqueeItems)S.marqueeItems=[];
+      fillForm();
+      isDirty=false;$('udot').style.display='none';updateSbar();
+      toast('Loaded live data ✓','ok');
+    }else{
+      toast('Could not read STORE from file. Is it the right file?','err');
+    }
+  }catch(e){toast('Error: '+e.message,'err');}
+  btn.disabled=false;btn.textContent='↓ Load from GitHub';
+}
+
+async function publish(){
+  saveGH();collectForm();
+  if(!ghReady()){toast('Configure GitHub settings first','err');tab('github');return;}
+  var pbtn=$('pub-btn');pbtn.disabled=true;
+  var log=$('pub-log');log.textContent='';log.classList.add('on');
+  addLog('Fetching current file from GitHub…');
+  try{
+    // 1. GET
+    var gr=await fetch(
+      'https://api.github.com/repos/'+GH.user+'/'+GH.repo+'/contents/'+GH.file+'?ref='+GH.branch,
+      {headers:{Authorization:'token '+GH.token,Accept:'application/vnd.github.v3+json'}}
+    );
+    if(!gr.ok){var ge=await gr.json();addLog('✗ Fetch failed: '+ge.message);toast('Fetch failed: '+ge.message,'err');pbtn.disabled=false;return;}
+    var fd=await gr.json();
+    var sha=fd.sha;
+    var currentHTML=decodeB64(fd.content);
+    addLog('✓ Got file ('+Math.round(currentHTML.length/1024)+' KB · sha:'+sha.slice(0,7)+')');
+
+    // 2. Inject
+    addLog('Building new STORE block…');
+    var newBlock=buildStoreBlock();
+    addLog('Injecting into HTML…');
+    var result=injectStore(currentHTML,newBlock);
+    if(!result.ok){addLog('✗ '+result.error);toast(result.error,'err');pbtn.disabled=false;return;}
+    var updatedHTML=result.html;
+    addLog('✓ Injected ('+Math.round(updatedHTML.length/1024)+' KB)');
+
+    // Safety check: updated file should be at least 80% of original size
+    var ratio=updatedHTML.length/currentHTML.length;
+    if(ratio<0.80){
+      addLog('✗ SAFETY ABORT: updated file is only '+Math.round(ratio*100)+'% of original size.');
+      addLog('  Something went wrong — your live file was NOT changed.');
+      toast('Aborted — something went wrong. File NOT changed.','err');
+      pbtn.disabled=false;return;
+    }
+    addLog('✓ Size check OK ('+Math.round(ratio*100)+'% of original)');
+
+    // 3. Commit
+    addLog('Committing to GitHub…');
+    var encoded=encodeB64(updatedHTML);
+    var pr=await fetch(
+      'https://api.github.com/repos/'+GH.user+'/'+GH.repo+'/contents/'+GH.file,
+      {method:'PUT',
+       headers:{Authorization:'token '+GH.token,Accept:'application/vnd.github.v3+json','Content-Type':'application/json'},
+       body:JSON.stringify({message:'Admin: Update store via Haverleigh Admin Panel',content:encoded,sha:sha,branch:GH.branch})}
+    );
+    if(pr.ok){
+      var prd=await pr.json();
+      addLog('✓ Committed! sha:'+prd.commit.sha.slice(0,7));
+      addLog('');addLog('✅ DONE — site goes live in ~30 seconds.');
+      toast('Published! Live in ~30s ✓','ok');
+      isDirty=false;$('udot').style.display='none';updateSbar();
+    }else{
+      var pe=await pr.json();addLog('✗ Commit failed: '+pe.message);toast('Commit failed: '+pe.message,'err');
+    }
+  }catch(e){addLog('✗ Error: '+e.message);toast('Error: '+e.message,'err');}
+  pbtn.disabled=false;
+}
+
+/* ── BOOT ── */
+document.addEventListener('keydown',function(e){if(e.key==='Escape')closeMod('prod-modal');});
+$('prod-modal').addEventListener('click',function(e){if(e.target===this)closeMod('prod-modal');});
+try{loadGH();fillForm();}
+catch(e){document.body.innerHTML='<div style="padding:40px;font-family:sans-serif"><strong style="color:#dc2626">Startup error:</strong><br><br><code style="background:#fee2e2;padding:8px 12px;border-radius:6px;display:inline-block">'+esc(e.message)+'</code><br><br><small style="color:#888">Open F12 console for details.</small></div>';}
+</script>
+</body>
+</html>
